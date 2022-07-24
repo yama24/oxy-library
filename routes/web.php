@@ -40,3 +40,10 @@ Route::post('/editbook', [HomeController::class, 'editbook'])->name('editbook')-
 Route::post('/addbook', [HomeController::class, 'addbook'])->name('addbook')->middleware('auth');
 Route::get('/deletebook/{id}', [HomeController::class, 'deletebook'])->name('deletebook')->middleware('auth');
 ##### BOOKS #####
+
+##### USERS #####
+Route::get('/users', [HomeController::class, 'users'])->middleware('auth');
+Route::post('/adduser', [HomeController::class, 'adduser'])->name('adduser')->middleware('auth');
+Route::get('/changestatus/{id}', [HomeController::class, 'changestatus'])->name('changestatus')->middleware('auth');
+Route::get('/deleteuser/{id}', [HomeController::class, 'deleteuser'])->name('deleteuser')->middleware('auth');
+##### USERS #####

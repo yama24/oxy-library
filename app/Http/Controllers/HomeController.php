@@ -2,18 +2,29 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Book;
+use App\Models\{Book, User};
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\{Storage, Hash, Session, Url};
+
 
 class HomeController extends Controller
 {
     public function index()
     {
-        return view('home');
+        $books = Book::all();
+        $authors = Book::groupBy('author')->select('author')->get();
+        $publishers = Book::groupBy('publisher')->select('publisher')->get();
+        $users = User::all();
+        $data = [
+            'title' => 'Dashboard',
+            'books' =>count($books),
+            'authors' =>count($authors),
+            'users' =>count($users),
+            'publishers' =>count($publishers),
+        ];
+        return view('dashboard', $data);
     }
 
     public function books()
@@ -70,13 +81,13 @@ class HomeController extends Controller
         $book->author = $request->author;
         $book->publisher = $request->publisher;
         $book->printing_date = $request->printing_date;
-        
+
         $cover = $request->file('cover');
         $ext = $cover->getClientOriginalExtension();
         $cover->storeAs('public/cover', Str::slug($request->title) . '.' . $ext);
-        
+
         $book->cover = Str::slug($request->title) . '.' . $ext;
-        
+
         $book->save();
         Session::flash('success', 'Adding book successfully!');
         return redirect('/books');
@@ -89,5 +100,60 @@ class HomeController extends Controller
         $book->delete();
         Session::flash('success', 'Deleting book successfully!');
         return redirect('/books');
+    }
+
+    public function users()
+    {
+        if (session('user')->admin) {
+            $users = User::all();
+            $data = [
+                'title' => 'Users',
+                'users' => $users
+            ];
+            return view('users', $data);
+        } else {
+            return redirect('/');
+        }
+    }
+
+    public function adduser(Request $request)
+    {
+        Session::flash('modalid', $request->modalid);
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|email|unique:users,email',
+        ]);
+
+        $password = Str::random(10);
+
+        $user = new User();
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->password = Hash::make($password);
+        $user->save();
+
+        app('App\Http\Controllers\MailController')->index([
+            'to' => $request->email,
+            'title' => 'Registration Data',
+            'page' => 'registration',
+            'data' => ['name' => $request->name, 'email' => $request->email, 'password' => $password, 'url' => url('/')]
+        ]);
+        Session::flash('success', 'Adding user successfully!');
+        return redirect('/users');
+    }
+    public function changestatus($id)
+    {
+        $user = User::find($id);
+        $user->admin = $user->admin ? 0 : 1;
+        $user->save();
+        Session::flash('success', 'Changing user successfully!');
+        return redirect('/users');
+    }
+    public function deleteuser($id)
+    {
+        $user = User::find($id);
+        $user->delete();
+        Session::flash('success', 'Deleting user successfully!');
+        return redirect('/users');
     }
 }
