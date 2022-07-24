@@ -34,4 +34,9 @@ Route::post('/actionresetpassword', [AuthController::class, 'actionresetpassword
 Route::get('/actionlogout', [AuthController::class, 'actionlogout'])->name('actionlogout');
 ##### AUTH #####
 
+##### BOOKS #####
 Route::get('/books', [HomeController::class, 'books'])->middleware('auth');
+Route::post('/editbook', [HomeController::class, 'editbook'])->name('editbook')->middleware('auth');
+Route::post('/addbook', [HomeController::class, 'addbook'])->name('addbook')->middleware('auth');
+Route::get('/deletebook/{id}', [HomeController::class, 'deletebook'])->name('deletebook')->middleware('auth');
+##### BOOKS #####
