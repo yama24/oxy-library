@@ -72,6 +72,12 @@ migrate & seed database
 php artisan migrate:fresh --seed
 ```
 
+Link storage location 
+
+```bash
+php artisan storage:link
+```
+
 run the local server
 
 ```bash

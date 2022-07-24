@@ -33,3 +33,5 @@ Route::post('/actionforgotpassword', [AuthController::class, 'actionforgotpasswo
 Route::post('/actionresetpassword', [AuthController::class, 'actionresetpassword'])->name('actionresetpassword');
 Route::get('/actionlogout', [AuthController::class, 'actionlogout'])->name('actionlogout');
 ##### AUTH #####
+
+Route::get('/books', [HomeController::class, 'books'])->middleware('auth');
