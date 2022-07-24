@@ -66,7 +66,7 @@ and for email please set according to your email
 
 for test, I suggest to use [Mailtrap.io](https://mailtrap.io/)
 
-migrate anb seed database 
+migrate & seed database 
 
 ```bash
 php artisan migrate:fresh --seed
